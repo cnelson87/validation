@@ -1,0 +1,134 @@
+body {
+	color: #666;
+	font-size: 14px;
+	font-family: Arial, Verdana, sans-serif;
+	line-height: 20px;
+	background: #ccc;
+	margin: 0;
+	padding: 0;
+}
+p, dl, ol, ul, table, fieldset {
+	font-size: 14px;
+	line-height: 20px;
+	margin: 0 0 20px 0;
+	padding: 0;
+}
+dt, dd, li, th, td {
+	margin: 0;
+	padding: 0;			
+}
+#content {
+	width: 640px;
+	background: #fff;
+	margin: 0 auto;
+	padding: 40px;
+}
+#validationSummary {
+	display: none;
+	border: 2px solid #666;
+	padding: 8px 16px;
+	margin: 0 0 20px 0;
+	
+}
+#validationSummary.valid {
+	display: block;
+}
+#validationSummary.invalid {
+	display: block;
+	color: #c00;
+	border-color: #c00;
+}
+	#validationSummary h3 {
+		margin: 0 0 4px 0;
+	}
+	#validationSummary ul {
+		margin: 0 0 0 2em;
+	}
+	#validationSummary p {
+		margin: 0;
+	}
+
+fieldset {
+	border: 0;
+}
+
+	fieldset span.formnote {
+		/* text after form field */
+		display: inline-block;
+		font-size: 11px;
+		font-style: italic;
+		margin-left: 1em;
+	}
+
+	fieldset.text-fields ol,
+	fieldset.text-fields ol li {
+		list-style: none;
+		margin-bottom: 8px;	
+	}
+	fieldset.text-fields label {
+		display: inline-block;
+		width: 120px;
+	}
+	fieldset.text-fields label + textarea {
+		vertical-align: top;
+	}
+
+input, select, textarea {
+	color: #333;
+	font-family: Arial, Verdana, sans-serif;
+	font-size: 12px;
+	line-height: 1.2;
+	background: #fff;
+	border: 2px solid #aaa;
+	border-right-color: #888;
+	border-bottom-color: #888;
+	border-radius: 0;
+	margin: 0;
+	padding: 2px;
+}
+select {
+	padding: 1px;
+}
+input:invalid,
+select:invalid,
+textarea:invalid {
+	box-shadow: none;
+	outline: 0;
+}
+input:focus,
+select:focus,
+textarea:focus {
+	border-color: #111;
+	box-shadow: none;
+	outline: 0;
+}
+input.invalid,
+select.invalid,
+textarea.invalid {
+	border-color: #c00;
+}
+
+input[type=text],
+input[type=password],
+input[type=url],
+input[type=email] {
+	width: 200px;
+}
+input[type=tel],
+input[type=number] {
+	width: 80px;
+}
+select {
+	width: 88px;
+}
+textarea {
+	width: 200px;
+	height: 3.6em; /* x3 line-height */
+	resize: none;
+}
+input[type=submit] {
+	font-weight: bold;
+	background: #ddd;
+	padding: 2px 16px;
+}
+

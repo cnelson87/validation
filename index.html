@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+	<meta charset="utf-8" />
+
+	<title>Form Validation</title>
+
+	<link rel="stylesheet" href="assets/styles/styles.css" />
+
+	<script src="assets/scripts/vendor/jquery-1.9.1.min.js"></script>
+	<script src="assets/scripts/vendor/mustache-0.7.2.js"></script>
+	<script src="assets/scripts/main.js"></script>
+
+</head>
+<body>
+
+	<div id="content">
+
+		<div id="validationSummary"></div>
+
+		<form id="Form" method="POST" action="index.html" novalidate="novalidate">
+
+			<fieldset id="TextFieldset" class="text-fields">
+				<ol>
+					<li>
+						<label for="Text">Text</label>
+						<input type="text" id="Text" name="Text" maxlength="12" data-label="Text" />
+						<span class="formnote">max length = 12</span>
+					</li>
+					<li>
+						<label for="Custom">Custom</label>
+						<input type="text" id="Custom" name="Custom" required="required" data-label="Custom" placeholder="custom" pattern="custom" />
+					</li>
+					<li>
+						<label for="Email">Email</label>
+						<input type="email" id="Email" name="Email" required="required" data-label="Email" />
+					</li>
+					<li>
+						<label for="Url">Url</label>
+						<input type="url" id="Url" name="Url" required="required" data-label="Url" />
+					</li>
+					<li>
+						<label for="Tel">Telephone</label>
+						<input type="tel" id="Tel" name="Tel" maxlength="10" required="required" data-label="Telephone" />
+						<span class="formnote">uses default validation</span>
+					</li>
+					<li>
+						<label for="Tel2">Telephone 2</label>
+						<input type="tel" id="Tel2" name="Tel2" maxlength="10" required="required" data-label="Telephone 2" placeholder="10 digit num" pattern="\d{10}" />
+						<span class="formnote">uses patternMatch validation</span>
+					</li>
+					<li>
+						<label for="NumRange">Num Range (3 - 8)</label>
+						<input type="number" id="NumRange" name="NumRange" min="3" max="8" maxlength="4" required="required" data-label="Num Range" />
+					</li>
+					<li>
+						<label for="EvenNum">Even Num (>= 2)</label>
+						<input type="number" id="EvenNum" name="EvenNum" min="2" max="1000" step="2" maxlength="4" required="required" data-label="Even Num" />
+					</li>
+					<li>
+						<label for="OddNum">Odd Num (>= 1)</label>
+						<input type="number" id="OddNum" name="OddNum" min="1" max="999" step="2" maxlength="4" required="required" data-label="Odd Num" />
+					</li>
+					<li>
+						<label for="Select">Select</label>
+						<select id="Select" name="Select" required="required" data-label="Select">
+							<option value="">Select</option>
+							<option value="A">A</option>
+							<option value="1">1</option>
+						</select>
+					</li>
+					<li>
+						<label for="Comments">Comments</label>
+						<textarea id="Comments" name="Comments" maxlength="20" required="required" data-label="Comments">Default comments text is more than 20 characters</textarea>
+					</li>
+				</ol>
+			</fieldset>
+
+			<fieldset class="form-btns">
+				<input type="submit" id="Submit" name="Submit" value="Submit" />
+			</fieldset>
+
+		</form>
+
+	</div>
+
+</body>
+</html>
