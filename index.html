@@ -9,7 +9,14 @@
 
 	<script src="assets/scripts/vendor/jquery-1.9.1.min.js"></script>
 	<script src="assets/scripts/vendor/mustache-0.7.2.js"></script>
-	<script src="assets/scripts/main.js"></script>
+	<script src="assets/scripts/validator.js"></script>
+
+	<script>
+		$(function () {
+			var elForm = document.getElementById('Form');
+			var testFormValidator = new FormValidator(elForm);
+		});
+	</script>
 
 </head>
 <body>
@@ -42,12 +49,22 @@
 					<li>
 						<label for="Tel">Telephone</label>
 						<input type="tel" id="Tel" name="Tel" maxlength="10" required="required" data-label="Telephone" />
-						<span class="formnote">uses default validation</span>
+						<span class="formnote">uses default validation (input type="tel")</span>
 					</li>
 					<li>
 						<label for="Tel2">Telephone 2</label>
 						<input type="tel" id="Tel2" name="Tel2" maxlength="10" required="required" data-label="Telephone 2" placeholder="10 digit num" pattern="\d{10}" />
-						<span class="formnote">uses patternMatch validation</span>
+						<span class="formnote">uses patternMatch validation to enforce 10 digit num</span>
+					</li>
+					<li>
+						<label for="Number">Number</label>
+						<input type="number" id="Number" name="Number" maxlength="4" required="required" data-label="Number" />
+						<span class="formnote">uses default validation (input type="number")</span>
+					</li>
+					<li>
+						<label for="Number2">Number 2</label>
+						<input type="number" id="Number2" name="Number2" maxlength="4" required="required" data-label="Number 2" pattern="\d{1,}" />
+						<span class="formnote">uses patternMatch validation to enforce number</span>
 					</li>
 					<li>
 						<label for="NumRange">Num Range (3 - 8)</label>
