@@ -13,6 +13,9 @@
 
 	<script>
 		$(function () {
+			$(document).on('FormValidator:invalid', function(e,arrData){
+				console.log(arrData);
+			});
 			var elForm = document.getElementById('Form');
 			var testFormValidator = new FormValidator(elForm);
 		});

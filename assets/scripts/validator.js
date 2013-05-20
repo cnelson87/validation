@@ -17,6 +17,8 @@ var FormValidator = function(elForm, objOptions) {
 	// because there are other properties on the validity object that we don't want / need.
 	// ex: Chrome includes non-w3c-compliant 'badInput'.
 	this.arrValidityProps = ['valueMissing','tooLong','typeMismatch','rangeOverflow','rangeUnderflow','stepMismatch','patternMismatch'];
+	this.arrInvalids = [];
+	this.arrMessages = [];
 
 	this.bindEvents();
 
@@ -29,14 +31,13 @@ FormValidator.prototype = {
 		$(this.elForm).submit(function(e) {
 			var elForm = this;
 			if (self.isValid(elForm)) {
-				e.preventDefault();	// block form from posting for testing
-				//console.log('valid!');
+				e.preventDefault();	// block form post for testing
+				//console.log('valid');
 				$.event.trigger('FormValidator:valid');
 				self.emptyValidationSummary();
 			} else {
 				e.preventDefault();
-				//console.log('invalid!');
-				$.event.trigger('FormValidator:invalid');
+				//console.log('invalid');
 				self.invalidFormSubmit();
 			}
 		});
@@ -52,153 +53,139 @@ FormValidator.prototype = {
 
 	invalidFormSubmit: function () {
 		var elInput;
-		var label;
-		var name;
-		var error;
-		var template;
-		var message;
-		var data = {};
-		var arrInvalids = [];
-		var arrMessages = [];
+
+		this.arrInvalids.length = 0;
+		this.arrMessages.length = 0;
 
 		for (var i=0, len=this.elFormFields.length; i<len; i++) {
 			elInput = this.elFormFields[i];
-			name = elInput.name || 'Name';
-			label = elInput.dataset.label || 'Field';
-			data['label'] = label;
 
 			if (elInput.willValidate && !this.isValid(elInput, true)) {
-
-				for (var j=0, l=this.arrValidityProps.length; j<l; j++) {
-
-					if (elInput.validity[this.arrValidityProps[j]]) {
-						error = this.arrValidityProps[j];
-						if (error === 'typeMismatch') {
-							if (elInput.type === 'email') {
-								error = 'emailMismatch';
-							} else if (elInput.type === 'url') {
-								error = 'urlMismatch';
-							}
-						}
-						if (error === 'rangeOverflow') {
-							data['max'] = elInput.max;
-						}
-						if (error === 'rangeUnderflow') {
-							data['min'] = elInput.min;
-						}
-
-						template = this.Messages[error];
-						message = Mustache.render(template, data);
-
-						arrInvalids.push({"el": elInput, "name": name, "message": message});
-						arrMessages.push(message);
-
-						//console.log(elInput, error);
-						break;
-					}
-
-				}
-
-				// 
-				// looping thru obj props returned unpredictble results 
-				// 
-				// Chrome includes non-w3c-compliant 'badInput' in validity property, consider deleting
-				// delete elInput.validity.badInput;
-				// console.log(elInput.validity);
-				// for (var prop in elInput.validity) {
-				// 	var val = elInput.validity[prop];
-				// 	// check val is true and not 'badInput'
-				// 	if (val && prop != 'badInput') {
-				// 		error = prop;
-				// 		break;
-				// 	}
-				// }
-				// console.log(elInput, error);
+				this.arrInvalids.push(this.validateField(elInput));
 			}
 
 		}
 
-		this.buildValidationSummary(arrMessages);
+		this.buildValidationSummary(this.arrMessages);
 
-		return arrInvalids;
+		$.event.trigger('FormValidator:invalid', [this.arrInvalids]);
 
-		//old way
-		//this.validateFields();
+		// old way
+		// this.validateFields();
 	},
-	validateFields: function () {
-		var elInput = null;
-		var label = null;
-		var name = null;
-		var template = null;
-		var message = null;
-		var data = {};
-		var arrInvalids = [];
-		var arrMessages = [];
 
-		for (var i=0, len = this.elFormFields.length; i<len; i++) {
-			elInput = this.elFormFields[i];
-			name = elInput.name || 'Name';
-			label = elInput.dataset.label || 'Field';
-			data['label'] = label;
+	validateField: function (elInput) {
+		var name = elInput.name || 'Name';
+		var label = elInput.dataset.label || 'Field';
+		var data = {'label': label};
+		var error;
+		var message;
 
-			if (elInput.willValidate) {
-				if (!this.isValid(elInput, true)) {
+		for (var i=0, len=this.arrValidityProps.length; i<len; i++) {
 
-					switch (true) {
-						case this.isValueMissing(elInput):
-							// any required field
-							template = this.Messages.valueMissing;
-							break;
-						case this.isTooLong(elInput):
-							// mostly unsupported, only textarea if content is preset and then modified by user
-							template = this.Messages.tooLong;
-							break;
-						case this.isTypeMismatch(elInput):
-							// only types 'email' and 'url' throw typeMismatch
-							if (elInput.type === 'email') {
-								template = this.Messages.emailMismatch;
-							} else if (elInput.type === 'url') {
-								template = this.Messages.urlMismatch;
-							} else {
-								// catch-all
-								template = this.Messages.typeMismatch;
-							}
-							break;
-						case this.isRangeOverflow(elInput):
-							// type 'number'
-							data['max'] = elInput.max;
-							template = this.Messages.rangeOverflow;
-							break;
-						case this.isRangeUnderflow(elInput):
-							// type 'number'
-							data['min'] = elInput.min;
-							template = this.Messages.rangeUnderflow;
-							break;
-						case this.isStepMismatch(elInput):
-							// type 'number'
-							template = this.Messages.stepMismatch;
-							break;
-						case this.isPatternMismatch(elInput):
-							// custom pattern data attribute
-							template = this.Messages.patternMismatch;
-							break;
+			if (elInput.validity[this.arrValidityProps[i]]) {
+				error = this.arrValidityProps[i];
+				if (error === 'typeMismatch') {
+					if (elInput.type === 'email') {
+						error = 'emailMismatch';
+					} else if (elInput.type === 'url') {
+						error = 'urlMismatch';
 					}
-
-					message = Mustache.render(template, data);
-
-					arrInvalids.push({"el": elInput, "property": name, "message": message});
-					arrMessages.push(message);
-
 				}
+				if (error === 'rangeOverflow') {
+					data['max'] = elInput.max;
+				}
+				if (error === 'rangeUnderflow') {
+					data['min'] = elInput.min;
+				}
+				message = Mustache.render(this.Messages[error], data);
+				break;
 			}
 
 		}
 
-		this.buildValidationSummary(arrMessages);
+		//console.log(message);
+		this.arrMessages.push(message);
 
-		return arrInvalids;
+		return {'el': elInput, 'name': name, 'message': message};
 
 	},
+
+	// old way
+	// validateFields: function () {
+	// 	var elInput = null;
+	// 	var label = null;
+	// 	var name = null;
+	// 	var template = null;
+	// 	var message = null;
+	// 	var data = {};
+	// 	var arrInvalids = [];
+	// 	var arrMessages = [];
+
+	// 	for (var i=0, len = this.elFormFields.length; i<len; i++) {
+	// 		elInput = this.elFormFields[i];
+	// 		name = elInput.name || 'Name';
+	// 		label = elInput.dataset.label || 'Field';
+	// 		data['label'] = label;
+
+	// 		if (elInput.willValidate) {
+	// 			if (!this.isValid(elInput, true)) {
+
+	// 				switch (true) {
+	// 					case this.isValueMissing(elInput):
+	// 						// any required field
+	// 						template = this.Messages.valueMissing;
+	// 						break;
+	// 					case this.isTooLong(elInput):
+	// 						// mostly unsupported, only textarea if content is preset and then modified by user
+	// 						template = this.Messages.tooLong;
+	// 						break;
+	// 					case this.isTypeMismatch(elInput):
+	// 						// only types 'email' and 'url' throw typeMismatch
+	// 						if (elInput.type === 'email') {
+	// 							template = this.Messages.emailMismatch;
+	// 						} else if (elInput.type === 'url') {
+	// 							template = this.Messages.urlMismatch;
+	// 						} else {
+	// 							// catch-all
+	// 							template = this.Messages.typeMismatch;
+	// 						}
+	// 						break;
+	// 					case this.isRangeOverflow(elInput):
+	// 						// type 'number'
+	// 						data['max'] = elInput.max;
+	// 						template = this.Messages.rangeOverflow;
+	// 						break;
+	// 					case this.isRangeUnderflow(elInput):
+	// 						// type 'number'
+	// 						data['min'] = elInput.min;
+	// 						template = this.Messages.rangeUnderflow;
+	// 						break;
+	// 					case this.isStepMismatch(elInput):
+	// 						// type 'number'
+	// 						template = this.Messages.stepMismatch;
+	// 						break;
+	// 					case this.isPatternMismatch(elInput):
+	// 						// custom pattern data attribute
+	// 						template = this.Messages.patternMismatch;
+	// 						break;
+	// 				}
+
+	// 				message = Mustache.render(template, data);
+
+	// 				arrInvalids.push({"el": elInput, "property": name, "message": message});
+	// 				arrMessages.push(message);
+
+	// 			}
+	// 		}
+
+	// 	}
+
+	// 	this.buildValidationSummary(arrMessages);
+
+	// 	return arrInvalids;
+
+	// },
 
 	buildValidationSummary: function (arrMessages) {
 		var innerHTML = Mustache.render(this.Messages.validationSummary, arrMessages);
