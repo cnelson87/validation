@@ -200,9 +200,6 @@ FormValidator.prototype = {
 
 	},
 
-
-
-
 	buildValidationSummary: function (arrMessages) {
 		var innerHTML = Mustache.render(this.Messages.validationSummary, arrMessages);
 		this.elValidationSummary.classList.remove(this.options.validClass);
@@ -280,13 +277,13 @@ FormValidator.prototype = {
 	Messages: {
 		valueMissing: "{{label}} is a required field.",
 		tooLong: "{{label}} is too long.",
-		typeMismatch: "{{label}} is invalid.",
-		emailMismatch: "{{label}} needs to be formatted as an email.",
-		urlMismatch: "{{label}} needs to be formatted as a url.",
+		typeMismatch: "{{label}} must match requested format.",
+		emailMismatch: "{{label}} must be formatted as an email.",
+		urlMismatch: "{{label}} must be formatted as a url.",
 		rangeOverflow: "{{label}} must be less than or equal to {{max}}.",
 		rangeUnderflow: "{{label}} must be greater than or equal to {{min}}.",
-		stepMismatch: "{{label}} needs to be in the valid format.",
-		patternMismatch: "{{label}} needs to be in the valid format.",
+		stepMismatch: "{{label}} must match requested format.",
+		patternMismatch: "{{label}} must match requested format.",
 		validationSummary: "<h3>Validation Summary:</h3><ul>{{#.}}<li>{{.}}</li>{{/.}}</ul>"
 	}
 

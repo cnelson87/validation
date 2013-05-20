@@ -1,21 +1,13 @@
 
-
-var tmplValidationSummary = "<h3>Validation Summary:</h3><ul>{{{html}}}</ul>";
-
-var tmplRequiredField = "<li>{{label}} is required</li>";
-
-var tmplTooLong = "<li>{{label}} is too long</li>";
-
-var tmplTypeMismatch = "<li>{{label}} is invalid</li>";
-
-var tmplEmailMismatch = "<li>{{label}} is invalid</li>";
-
-var tmplUrlMismatch = "<li>{{label}} is invalid</li>";
-
-var tmplRangeOverflow = "<li>{{label}} must be less than or equal to {{max}}</li>";
-
-var tmplRangeUnderflow = "<li>{{label}} must be greater than or equal to {{min}}</li>";
-
-var tmplStepMismatch = "<li>{{label}} is invalid</li>";
-
-var tmplPatternMismatch = "<li>{{label}} must match requested format</li>";
+var MessageTemplates = {
+	valueMissing: "{{label}} is a required field.",
+	tooLong: "{{label}} is too long.",
+	typeMismatch: "{{label}} must match requested format.",
+	emailMismatch: "{{label}} must be formatted as an email.",
+	urlMismatch: "{{label}} must be formatted as a url.",
+	rangeOverflow: "{{label}} must be less than or equal to {{max}}.",
+	rangeUnderflow: "{{label}} must be greater than or equal to {{min}}.",
+	stepMismatch: "{{label}} must match requested format.",
+	patternMismatch: "{{label}} must match requested format.",
+	validationSummary: "<h3>Validation Summary:</h3><ul>{{#.}}<li>{{.}}</li>{{/.}}</ul>"
+}
