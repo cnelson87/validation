@@ -33,8 +33,7 @@ FormValidator.prototype = {
 			if (self.isValid(elForm)) {
 				e.preventDefault();	// block form post for testing
 				//console.log('valid');
-				$.event.trigger('FormValidator:valid');
-				self.emptyValidationSummary();
+				self.validFormSubmit();
 			} else {
 				e.preventDefault();
 				//console.log('invalid');
@@ -49,6 +48,11 @@ FormValidator.prototype = {
 			}
 		});
 
+	},
+
+	validFormSubmit: function () {
+		this.emptyValidationSummary();
+		$.event.trigger('FormValidator:valid');
 	},
 
 	invalidFormSubmit: function () {
