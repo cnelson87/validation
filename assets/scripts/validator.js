@@ -44,7 +44,11 @@ FormValidator.prototype = {
 		$(this.elFormFields).blur(function(e) {
 			var elInput = this;
 			if (elInput.willValidate) {
-				self.isValid(elInput, true);
+				if (self.isValid(elInput)) {
+					self.unhighlight(elInput);
+				} else {
+					self.highlight(elInput);
+				}
 			}
 		});
 
@@ -52,7 +56,7 @@ FormValidator.prototype = {
 
 	validFormSubmit: function () {
 		this.emptyValidationSummary();
-		$.event.trigger('FormValidator:valid');
+		$.event.trigger('FormValidator:Valid');
 	},
 
 	invalidFormSubmit: function () {
@@ -64,18 +68,21 @@ FormValidator.prototype = {
 		for (var i=0, len=this.elFormFields.length; i<len; i++) {
 			elInput = this.elFormFields[i];
 
-			if (elInput.willValidate && !this.isValid(elInput, true)) {
-				this.arrInvalids.push(this.validateField(elInput));
+			if (elInput.willValidate) {
+				if (this.isValid(elInput)) {
+					this.unhighlight(elInput);
+				} else {
+					this.highlight(elInput);
+					this.arrInvalids.push(this.validateField(elInput));
+				}
 			}
 
 		}
 
 		this.buildValidationSummary(this.arrMessages);
 
-		$.event.trigger('FormValidator:invalid', [this.arrInvalids]);
+		$.event.trigger('FormValidator:Invalid', [this.arrInvalids]);
 
-		// old way
-		// this.validateFields();
 	},
 
 	validateField: function (elInput) {
@@ -86,110 +93,33 @@ FormValidator.prototype = {
 		var message;
 
 		for (var i=0, len=this.arrValidityProps.length; i<len; i++) {
-
 			if (elInput.validity[this.arrValidityProps[i]]) {
 				error = this.arrValidityProps[i];
-				if (error === 'typeMismatch') {
-					if (elInput.type === 'email') {
-						error = 'emailMismatch';
-					} else if (elInput.type === 'url') {
-						error = 'urlMismatch';
-					}
-				}
-				if (error === 'rangeOverflow') {
-					data['max'] = elInput.max;
-				}
-				if (error === 'rangeUnderflow') {
-					data['min'] = elInput.min;
-				}
-				message = Mustache.render(this.Messages[error], data);
 				break;
 			}
-
 		}
 
-		//console.log(message);
+		// special cases
+		if (error === 'typeMismatch' && elInput.type === 'email') {
+			error = 'emailMismatch';
+		}
+		if (error === 'typeMismatch' && elInput.type === 'url') {
+			error = 'urlMismatch';
+		}
+		if (error === 'rangeOverflow') {
+			data['max'] = elInput.max;
+		}
+		if (error === 'rangeUnderflow') {
+			data['min'] = elInput.min;
+		}
+
+		message = Mustache.render(this.Messages[error], data);
+
 		this.arrMessages.push(message);
 
 		return {'el': elInput, 'name': name, 'message': message};
 
 	},
-
-	// old way
-	// validateFields: function () {
-	// 	var elInput = null;
-	// 	var label = null;
-	// 	var name = null;
-	// 	var template = null;
-	// 	var message = null;
-	// 	var data = {};
-	// 	var arrInvalids = [];
-	// 	var arrMessages = [];
-
-	// 	for (var i=0, len = this.elFormFields.length; i<len; i++) {
-	// 		elInput = this.elFormFields[i];
-	// 		name = elInput.name || 'Name';
-	// 		label = elInput.dataset.label || 'Field';
-	// 		data['label'] = label;
-
-	// 		if (elInput.willValidate) {
-	// 			if (!this.isValid(elInput, true)) {
-
-	// 				switch (true) {
-	// 					case this.isValueMissing(elInput):
-	// 						// any required field
-	// 						template = this.Messages.valueMissing;
-	// 						break;
-	// 					case this.isTooLong(elInput):
-	// 						// mostly unsupported, only textarea if content is preset and then modified by user
-	// 						template = this.Messages.tooLong;
-	// 						break;
-	// 					case this.isTypeMismatch(elInput):
-	// 						// only types 'email' and 'url' throw typeMismatch
-	// 						if (elInput.type === 'email') {
-	// 							template = this.Messages.emailMismatch;
-	// 						} else if (elInput.type === 'url') {
-	// 							template = this.Messages.urlMismatch;
-	// 						} else {
-	// 							// catch-all
-	// 							template = this.Messages.typeMismatch;
-	// 						}
-	// 						break;
-	// 					case this.isRangeOverflow(elInput):
-	// 						// type 'number'
-	// 						data['max'] = elInput.max;
-	// 						template = this.Messages.rangeOverflow;
-	// 						break;
-	// 					case this.isRangeUnderflow(elInput):
-	// 						// type 'number'
-	// 						data['min'] = elInput.min;
-	// 						template = this.Messages.rangeUnderflow;
-	// 						break;
-	// 					case this.isStepMismatch(elInput):
-	// 						// type 'number'
-	// 						template = this.Messages.stepMismatch;
-	// 						break;
-	// 					case this.isPatternMismatch(elInput):
-	// 						// custom pattern data attribute
-	// 						template = this.Messages.patternMismatch;
-	// 						break;
-	// 				}
-
-	// 				message = Mustache.render(template, data);
-
-	// 				arrInvalids.push({"el": elInput, "property": name, "message": message});
-	// 				arrMessages.push(message);
-
-	// 			}
-	// 		}
-
-	// 	}
-
-	// 	this.buildValidationSummary(arrMessages);
-
-	// 	return arrInvalids;
-
-	// },
 
 	buildValidationSummary: function (arrMessages) {
 		var innerHTML = Mustache.render(this.Messages.validationSummary, arrMessages);
@@ -198,7 +128,7 @@ FormValidator.prototype = {
 		this.elValidationSummary.innerHTML = innerHTML;
 	},
 	emptyValidationSummary: function () {
-		var innerHTML = '<h3>Validation Summary:</h3><p>Form is valid.</p>';
+		var innerHTML = Mustache.render(this.Messages.validForm);
 		this.elValidationSummary.classList.remove(this.options.invalidClass);
 		this.elValidationSummary.classList.add(this.options.validClass);
 		this.elValidationSummary.innerHTML = innerHTML;
@@ -209,19 +139,13 @@ FormValidator.prototype = {
 *	Public Methods
 **/
 
-	isValid: function (el, triggerHighlighting) {
+	// takes a form or form element and returns true/false.
+	isValid: function (el) {
 		var validity = el.checkValidity();
-		if (triggerHighlighting) {
-			if (validity) {
-				this.unhighlight(el);
-			} else {
-				this.highlight(el);
-			}
-		}
 		return validity;
 	},
 
-	// validation methods map to constraint validation API
+	// utility validation methods map to constraint validation API
 	isValueMissing: function (el) {
 		return el.validity.valueMissing;
 	},
@@ -275,7 +199,8 @@ FormValidator.prototype = {
 		rangeUnderflow: "{{label}} must be greater than or equal to {{min}}.",
 		stepMismatch: "{{label}} must match requested format.",
 		patternMismatch: "{{label}} must match requested format.",
-		validationSummary: "<h3>Validation Summary:</h3><ul>{{#.}}<li>{{.}}</li>{{/.}}</ul>"
+		validationSummary: "<h3>Validation Summary:</h3><ul>{{#.}}<li>{{.}}</li>{{/.}}</ul>",
+		validForm: "<h3>Validation Summary:</h3><p>Form is valid.</p>"
 	}
 
 };
