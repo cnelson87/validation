@@ -13,10 +13,6 @@ var FormValidator = function(elForm, objOptions) {
 
 	this.elFormFields = this.elForm.querySelectorAll(this.options.selectorFormFields);
 
-	// these are the validity properties, in order, that we want to check on an element
-	// because there are other properties on the validity object that we don't want / need.
-	// ex: Chrome includes non-w3c-compliant 'badInput'.
-	this.arrValidityProps = ['valueMissing','tooLong','typeMismatch','rangeOverflow','rangeUnderflow','stepMismatch','patternMismatch'];
 	this.arrInvalids = [];
 	this.arrMessages = [];
 
@@ -41,7 +37,7 @@ FormValidator.prototype = {
 			}
 		});
 
-		$(this.elFormFields).blur(function(e) {
+		$(this.elFormFields).change(function(e) {
 			var elInput = this;
 			if (elInput.willValidate) {
 				if (self.isValid(elInput)) {
@@ -92,9 +88,9 @@ FormValidator.prototype = {
 		var error;
 		var message;
 
-		for (var i=0, len=this.arrValidityProps.length; i<len; i++) {
-			if (elInput.validity[this.arrValidityProps[i]]) {
-				error = this.arrValidityProps[i];
+		for (var i=0, len=this.validityProps.length; i<len; i++) {
+			if (elInput.validity[this.validityProps[i]]) {
+				error = this.validityProps[i];
 				break;
 			}
 		}
@@ -113,7 +109,7 @@ FormValidator.prototype = {
 			data['min'] = elInput.min;
 		}
 
-		message = Mustache.render(this.Messages[error], data);
+		message = Mustache.render(this.msgTemplates[error], data);
 
 		this.arrMessages.push(message);
 
@@ -122,13 +118,13 @@ FormValidator.prototype = {
 	},
 
 	buildValidationSummary: function (arrMessages) {
-		var innerHTML = Mustache.render(this.Messages.validationSummary, arrMessages);
+		var innerHTML = Mustache.render(this.msgTemplates.validationSummary, arrMessages);
 		this.elValidationSummary.classList.remove(this.options.validClass);
 		this.elValidationSummary.classList.add(this.options.invalidClass);
 		this.elValidationSummary.innerHTML = innerHTML;
 	},
 	emptyValidationSummary: function () {
-		var innerHTML = Mustache.render(this.Messages.validForm);
+		var innerHTML = Mustache.render(this.msgTemplates.validForm);
 		this.elValidationSummary.classList.remove(this.options.invalidClass);
 		this.elValidationSummary.classList.add(this.options.validClass);
 		this.elValidationSummary.innerHTML = innerHTML;
@@ -184,12 +180,21 @@ FormValidator.prototype = {
 		this.unhighlight(el);
 	},
 
+	// the validity properties, in order, that we want to check on an element
+	// due to other properties of the validity object that we don't want / need.
+	// ex: Chrome includes non-w3c-compliant 'badInput'.
+	validityProps: [
+		'valueMissing',
+		'tooLong',
+		'typeMismatch',
+		'rangeOverflow',
+		'rangeUnderflow',
+		'stepMismatch',
+		'patternMismatch'
+	],
 
-/**
-*	Message Templates
-**/
-
-	Messages: {
+	// message templates
+	msgTemplates: {
 		valueMissing: "{{label}} is a required field.",
 		tooLong: "{{label}} is too long.",
 		typeMismatch: "{{label}} must match requested format.",
