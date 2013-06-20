@@ -1,52 +1,32 @@
 
-var FormValidator = function (el, objOptions) {
-
-	this.el = el;
-	this.$el = $(el);
-	this.options = $.extend({
+var FormValidator = Backbone.View.extend({
+	options: {
 		validationSummaryId: 'validationSummary',
 		selectorFormFields: 'input, select, textarea',
 		invalidClass: 'invalid',
 		validClass: 'valid'
-	}, objOptions || {});
+	},
+	events: {
+		'change input, textarea, select': '__onInputChange',
+		'submit': '__onFormSubmit'
+	},
 
-	this._init();
-
-};
-
-FormValidator.prototype = {
-	_init: function () {
-		var self = this;
+	initialize: function () {
 
 		this.el.setAttribute('novalidate', 'novalidate');
 
 		this.elValidationSummary = document.getElementById(this.options.validationSummaryId);
 
 		this.elFormFields = this.el.querySelectorAll(this.options.selectorFormFields);
-		this.$elFormFields = $(this.elFormFields);
+		//this.$elFormFields = $(this.elFormFields);
 
 		this.arrInvalids = [];
 		this.arrMessages = [];
 
-		this._bindEvents();
-
 	},
 
-	_bindEvents: function () {
-		var self = this;
-
-		this.$elFormFields.on('change', function (e) {
-			var elInput = this;
-			self.__onInputChange(elInput);
-		});
-
-		this.$el.on('submit', function (e) {
-			self.__onFormSubmit(e);
-		});
-
-	},
-
-	__onInputChange: function (elInput) {
+	__onInputChange: function (e) {
+		var elInput = e.currentTarget;
 		if (elInput.willValidate) {
 			if (this.isValid(elInput)) {
 				this.unhighlight(elInput);
@@ -71,6 +51,7 @@ FormValidator.prototype = {
 	_validFormSubmit: function () {
 		this.emptyValidationSummary();
 		$.event.trigger('FormValidator:Valid');
+		this.trigger('FormValidator:Valid');
 	},
 
 	_invalidFormSubmit: function () {
@@ -96,6 +77,7 @@ FormValidator.prototype = {
 		this.buildValidationSummary(this.arrMessages);
 
 		$.event.trigger('FormValidator:Invalid', [this.arrInvalids]);
+		this.trigger('FormValidator:Invalid', this.arrInvalids);
 
 	},
 
@@ -226,4 +208,4 @@ FormValidator.prototype = {
 		validForm: "<h3>Validation Summary:</h3><p>Form is valid.</p>"
 	}
 
-};
+});
