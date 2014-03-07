@@ -88,10 +88,16 @@ var FormValidator = Backbone.View.extend({
 
 	validateField: function (elInput) {
 		var name = elInput.name || 'Name';
-		var label = elInput.dataset.label || 'Field';
+		//IE doesn't support native dataset...
+		//var label = elInput.dataset.label || 'Field';
+		//...so either use jQuery data()...
+		//var label = elInput.data('label') || 'Field';
+		//...or use native getAttribute().
+		var label = elInput.getAttribute('data-label') || 'Field';
 		var data = {'label': label};
 		var error;
 		var message;
+		// console.log(elInput);
 
 		for (var i=0, len=this.validityProps.length; i<len; i++) {
 			if (elInput.validity[this.validityProps[i]]) {
@@ -106,6 +112,9 @@ var FormValidator = Backbone.View.extend({
 		}
 		if (error === 'typeMismatch' && elInput.type === 'url') {
 			error = 'urlMismatch';
+		}
+		if ((error === 'typeMismatch' || error === 'badInput') && elInput.type === 'number') {
+			error = 'numberMismatch';
 		}
 		if (error === 'rangeOverflow') {
 			data['max'] = elInput.max;
@@ -163,6 +172,9 @@ var FormValidator = Backbone.View.extend({
 	isPatternMismatch: function (el) {
 		return el.validity.patternMismatch;
 	},
+	isBadInput: function (el) {
+		return el.validity.badInput;
+	},
 
 	// 'invalidates' fields by highlighting provided fields as 'invalid'
 	highlight: function (el) {
@@ -182,7 +194,7 @@ var FormValidator = Backbone.View.extend({
 
 	// the validity properties, in order, that we want to check on an element
 	// due to other properties of the validity object that we don't want / need.
-	// ex: Chrome includes non-w3c-compliant 'badInput'.
+	// ex: webkit (Chrome, Safari) includes non-w3c-compliant 'badInput'.
 	validityProps: [
 		'valueMissing',
 		'tooLong',
@@ -190,7 +202,8 @@ var FormValidator = Backbone.View.extend({
 		'rangeOverflow',
 		'rangeUnderflow',
 		'stepMismatch',
-		'patternMismatch'
+		'patternMismatch',
+		'badInput'
 	],
 
 	// message templates
@@ -200,6 +213,7 @@ var FormValidator = Backbone.View.extend({
 		typeMismatch: "{{label}} must match requested format.",
 		emailMismatch: "{{label}} must be formatted as an email.",
 		urlMismatch: "{{label}} must be formatted as a url.",
+		numberMismatch: "{{label}} must be formatted as a number.",
 		rangeOverflow: "{{label}} must be less than or equal to {{max}}.",
 		rangeUnderflow: "{{label}} must be greater than or equal to {{min}}.",
 		stepMismatch: "{{label}} must match requested format.",
