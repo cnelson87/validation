@@ -40,16 +40,17 @@ h5 {
 h6 {
 	font-size: 0.9em;
 }
-p, dl, ol, ul {
+p, dl, ol, ul, table {
 	margin: 0 0 1.5em 0;
 	padding: 0;
+}
+ol, ul {
+	margin-left: 1.2em;
 }
 table {
 	border: 0;
 	border-collapse: collapse;
 	border-spacing: 0;
-	margin: 0 0 1.5em 0;
-	padding: 0;
 }
 dt, dd, li, th, td {
 	margin: 0;
@@ -92,7 +93,7 @@ hr {
 }
 	#validationSummary p,
 	#validationSummary ul {
-		margin: 0;
+		margin-bottom: 0;
 	}
 
 form {}
@@ -108,7 +109,10 @@ fieldset {
 		font-style: italic;
 		margin-left: 5px;
 	}
-	fieldset.text-fields ol,
+	fieldset.text-fields ol {
+		list-style: none;
+		margin: 0 0 0.5em 0;
+	}
 	fieldset.text-fields ol > li {
 		list-style: none;
 		margin-bottom: 0.5em;
