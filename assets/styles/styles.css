@@ -54,7 +54,7 @@ table {
 }
 dt, dd, li, th, td {
 	margin: 0;
-	padding: 0;
+	padding: 0;			
 }
 a {
 	color: #66c;
@@ -114,7 +114,6 @@ fieldset {
 		margin: 0 0 0.5em 0;
 	}
 	fieldset.text-fields ol > li {
-		list-style: none;
 		margin-bottom: 0.5em;
 	}
 	fieldset.text-fields.inline ol > li {
@@ -129,15 +128,16 @@ fieldset {
 	fieldset.text-fields label.block {
 		display: block;
 		width: 200px;
-		margin-bottom: 0.2em;
+		margin-bottom: 4px;
 	}
 	fieldset.text-fields label + textarea {
 		vertical-align: top;
 	}
-
-	fieldset.cb-rb-fields ol,
-	fieldset.cb-rb-fields ol > li {
+	fieldset.cb-rb-fields ol {
 		list-style: none;
+		margin: 0 0 0.5em 0;
+	}
+	fieldset.cb-rb-fields ol > li {
 		margin-bottom: 0.5em;
 	}
 	fieldset.cb-rb-fields.inline ol > li {
