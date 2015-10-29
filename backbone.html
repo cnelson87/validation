@@ -13,35 +13,35 @@
 	<script src="assets/scripts/vendor/modernizr.custom.min.js"></script>
 	<script src="assets/scripts/vendor/jquery.min.js"></script>
 	<script src="assets/scripts/vendor/mustache.min.js"></script>
-	<script src="assets/scripts/vendor/underscore.min.js"></script>
-	<script src="assets/scripts/vendor/backbone.min.js"></script>
-	<script src="assets/scripts/vendor/backbone-super.min.js"></script>
-	<script src="assets/scripts/views/validator.js"></script>
+	<script src="assets/scripts/vendor/underscore-min.js"></script>
+	<script src="assets/scripts/vendor/backbone-min.js"></script>
+	<script src="assets/scripts/vendor/backbone-super-min.js"></script>
+	<script src="assets/scripts/views/validator-view.js"></script>
 
 	<script>
 		var el, $el, app;
 		var App = Backbone.View.extend({
-			initialize: function(){
-				this.formValidator = new FormValidator({el:this.el});
-				this.listenTo(this.formValidator, 'FormValidator:Valid', this.onValid);
-				this.listenTo(this.formValidator, 'FormValidator:Invalid', this.onInvalid);
+			initialize: function() {
+				this.validator = new ValidatorView({el:this.el});
+				this.listenTo(this.validator, 'Validator:Valid', this.onValid);
+				this.listenTo(this.validator, 'Validator:Invalid', this.onInvalid);
 			},
-			onValid: function(arrData){
+			onValid: function(arrData) {
 				console.log('Form is Valid');
 			},
-			onInvalid: function(arrData){
+			onInvalid: function(arrData) {
 				console.log('Form is Invalid');
 				console.log(arrData);
 			}
 		});
-		// $(document).on('FormValidator:Valid', function(e){
+		// $(document).on('Validator:Valid', function(e){
 		// 	console.log('Form is Valid');
 		// });
-		// $(document).on('FormValidator:Invalid', function(e,arrData){
+		// $(document).on('Validator:Invalid', function(e,arrData){
 		// 	console.log('Form is Invalid');
 		// 	console.log(arrData);
 		// });
-		$(function () {
+		$(function() {
 			el = document.getElementById('Form');
 			$el = $(el);
 			app = new App({el:$el});

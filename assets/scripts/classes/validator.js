@@ -1,5 +1,5 @@
 
-var FormValidator = function (el, objOptions) {
+var Validator = function(el, objOptions) {
 
 	this.el = el;
 	this.$el = $(el);
@@ -7,15 +7,16 @@ var FormValidator = function (el, objOptions) {
 		validationSummaryId: 'validationSummary',
 		selectorFormFields: 'input, select, textarea',
 		invalidClass: 'invalid',
-		validClass: 'valid'
+		validClass: 'valid',
+		customEventName: 'Validator'
 	}, objOptions || {});
 
 	this._init();
 
 };
 
-FormValidator.prototype = {
-	_init: function () {
+Validator.prototype = {
+	_init: function() {
 		var self = this;
 
 		this.el.setAttribute('novalidate', 'novalidate');
@@ -32,7 +33,7 @@ FormValidator.prototype = {
 
 	},
 
-	_bindEvents: function () {
+	_bindEvents: function() {
 		var self = this;
 
 		this.$elFormFields.on('change', function (e) {
@@ -46,7 +47,7 @@ FormValidator.prototype = {
 
 	},
 
-	__onInputChange: function (elInput) {
+	__onInputChange: function(elInput) {
 		if (elInput.willValidate) {
 			if (this.isValid(elInput)) {
 				this.unhighlight(elInput);
@@ -56,7 +57,7 @@ FormValidator.prototype = {
 		}
 	},
 
-	__onFormSubmit: function (e) {
+	__onFormSubmit: function(e) {
 		if (this.isValid(this.el)) {
 			e.preventDefault();	// block form post for testing
 			//console.log('valid');
@@ -68,12 +69,12 @@ FormValidator.prototype = {
 		}
 	},
 
-	_validFormSubmit: function () {
+	_validFormSubmit: function() {
 		this.emptyValidationSummary();
-		$.event.trigger('FormValidator:Valid');
+		$.event.trigger(this.options.customEventName + ':Valid');
 	},
 
-	_invalidFormSubmit: function () {
+	_invalidFormSubmit: function() {
 		var elInput;
 
 		this.arrInvalids.length = 0;
@@ -95,7 +96,7 @@ FormValidator.prototype = {
 
 		this.buildValidationSummary(this.arrMessages);
 
-		$.event.trigger('FormValidator:Invalid', [this.arrInvalids]);
+		$.event.trigger(this.options.customEventName + ':Invalid', [this.arrInvalids]);
 
 	},
 
@@ -104,7 +105,7 @@ FormValidator.prototype = {
 *	Public Methods
 **/
 
-	validateField: function (elInput) {
+	validateField: function(elInput) {
 		var name = elInput.name || 'Name';
 		//IE doesn't support native dataset...
 		//var label = elInput.dataset.label || 'Field';
@@ -149,13 +150,13 @@ FormValidator.prototype = {
 
 	},
 
-	buildValidationSummary: function (arrMessages) {
+	buildValidationSummary: function(arrMessages) {
 		var innerHTML = Mustache.render(this.msgTemplates.validationSummary, arrMessages);
 		this.elValidationSummary.classList.remove(this.options.validClass);
 		this.elValidationSummary.classList.add(this.options.invalidClass);
 		this.elValidationSummary.innerHTML = innerHTML;
 	},
-	emptyValidationSummary: function () {
+	emptyValidationSummary: function() {
 		var innerHTML = Mustache.render(this.msgTemplates.validForm);
 		this.elValidationSummary.classList.remove(this.options.invalidClass);
 		this.elValidationSummary.classList.add(this.options.validClass);
@@ -163,49 +164,49 @@ FormValidator.prototype = {
 	},
 
 	// takes a form or form element and returns true/false.
-	isValid: function (el) {
+	isValid: function(el) {
 		var validity = el.checkValidity();
 		return validity;
 	},
 
 	// utility validation methods map to constraint validation API
-	isValueMissing: function (el) {
+	isValueMissing: function(el) {
 		return el.validity.valueMissing;
 	},
-	isTooLong: function (el) {
+	isTooLong: function(el) {
 		return el.validity.tooLong;
 	},
-	isTypeMismatch: function (el) {
+	isTypeMismatch: function(el) {
 		return el.validity.typeMismatch;
 	},
-	isRangeOverflow: function (el) {
+	isRangeOverflow: function(el) {
 		return el.validity.rangeOverflow;
 	},
-	isRangeUnderflow: function (el) {
+	isRangeUnderflow: function(el) {
 		return el.validity.rangeUnderflow;
 	},
-	isStepMismatch: function (el) {
+	isStepMismatch: function(el) {
 		return el.validity.stepMismatch;
 	},
-	isPatternMismatch: function (el) {
+	isPatternMismatch: function(el) {
 		return el.validity.patternMismatch;
 	},
-	isBadInput: function (el) {
+	isBadInput: function(el) {
 		return el.validity.badInput;
 	},
 
 	// 'invalidates' fields by highlighting provided fields as 'invalid'
-	highlight: function (el) {
+	highlight: function(el) {
 		el.classList.add(this.options.invalidClass);
 	},
-	unhighlight: function (el) {
+	unhighlight: function(el) {
 		el.classList.remove(this.options.invalidClass);
 	},
-	highlightByName: function (name) {
+	highlightByName: function(name) {
 		var el = document.querySelector('[name=' + name + ']');
 		this.highlight(el);
 	},
-	unhighlightByName: function (name) {
+	unhighlightByName: function(name) {
 		var el = document.querySelector('[name=' + name + ']');
 		this.unhighlight(el);
 	},

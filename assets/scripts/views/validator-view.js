@@ -1,5 +1,5 @@
 
-var FormValidator = Backbone.View.extend({
+var ValidatorView = Backbone.View.extend({
 	options: {
 		validationSummaryId: 'validationSummary',
 		selectorFormFields: 'input, select, textarea',
@@ -11,7 +11,7 @@ var FormValidator = Backbone.View.extend({
 		'submit': '__onFormSubmit'
 	},
 
-	initialize: function () {
+	initialize: function() {
 
 		this.el.setAttribute('novalidate', 'novalidate');
 
@@ -25,7 +25,7 @@ var FormValidator = Backbone.View.extend({
 
 	},
 
-	__onInputChange: function (e) {
+	__onInputChange: function(e) {
 		var elInput = e.currentTarget;
 		if (elInput.willValidate) {
 			if (this.isValid(elInput)) {
@@ -36,7 +36,7 @@ var FormValidator = Backbone.View.extend({
 		}
 	},
 
-	__onFormSubmit: function (e) {
+	__onFormSubmit: function(e) {
 		if (this.isValid(this.el)) {
 			e.preventDefault();	// block form post for testing
 			//console.log('valid');
@@ -48,13 +48,13 @@ var FormValidator = Backbone.View.extend({
 		}
 	},
 
-	_validFormSubmit: function () {
+	_validFormSubmit: function() {
 		this.emptyValidationSummary();
-		$.event.trigger('FormValidator:Valid');
-		this.trigger('FormValidator:Valid');
+		$.event.trigger('Validator:Valid');
+		this.trigger('Validator:Valid');
 	},
 
-	_invalidFormSubmit: function () {
+	_invalidFormSubmit: function() {
 		var elInput;
 
 		this.arrInvalids.length = 0;
@@ -76,8 +76,8 @@ var FormValidator = Backbone.View.extend({
 
 		this.buildValidationSummary(this.arrMessages);
 
-		$.event.trigger('FormValidator:Invalid', [this.arrInvalids]);
-		this.trigger('FormValidator:Invalid', this.arrInvalids);
+		$.event.trigger('Validator:Invalid', [this.arrInvalids]);
+		this.trigger('Validator:Invalid', this.arrInvalids);
 
 	},
 
@@ -86,7 +86,7 @@ var FormValidator = Backbone.View.extend({
 *	Public Methods
 **/
 
-	validateField: function (elInput) {
+	validateField: function(elInput) {
 		var name = elInput.name || 'Name';
 		//IE doesn't support native dataset...
 		//var label = elInput.dataset.label || 'Field';
@@ -131,13 +131,13 @@ var FormValidator = Backbone.View.extend({
 
 	},
 
-	buildValidationSummary: function (arrMessages) {
+	buildValidationSummary: function(arrMessages) {
 		var innerHTML = Mustache.render(this.msgTemplates.validationSummary, arrMessages);
 		this.elValidationSummary.classList.remove(this.options.validClass);
 		this.elValidationSummary.classList.add(this.options.invalidClass);
 		this.elValidationSummary.innerHTML = innerHTML;
 	},
-	emptyValidationSummary: function () {
+	emptyValidationSummary: function() {
 		var innerHTML = Mustache.render(this.msgTemplates.validForm);
 		this.elValidationSummary.classList.remove(this.options.invalidClass);
 		this.elValidationSummary.classList.add(this.options.validClass);
@@ -145,49 +145,49 @@ var FormValidator = Backbone.View.extend({
 	},
 
 	// takes a form or form element and returns true/false.
-	isValid: function (el) {
+	isValid: function(el) {
 		var validity = el.checkValidity();
 		return validity;
 	},
 
 	// utility validation methods map to constraint validation API
-	isValueMissing: function (el) {
+	isValueMissing: function(el) {
 		return el.validity.valueMissing;
 	},
-	isTooLong: function (el) {
+	isTooLong: function(el) {
 		return el.validity.tooLong;
 	},
-	isTypeMismatch: function (el) {
+	isTypeMismatch: function(el) {
 		return el.validity.typeMismatch;
 	},
-	isRangeOverflow: function (el) {
+	isRangeOverflow: function(el) {
 		return el.validity.rangeOverflow;
 	},
-	isRangeUnderflow: function (el) {
+	isRangeUnderflow: function(el) {
 		return el.validity.rangeUnderflow;
 	},
-	isStepMismatch: function (el) {
+	isStepMismatch: function(el) {
 		return el.validity.stepMismatch;
 	},
-	isPatternMismatch: function (el) {
+	isPatternMismatch: function(el) {
 		return el.validity.patternMismatch;
 	},
-	isBadInput: function (el) {
+	isBadInput: function(el) {
 		return el.validity.badInput;
 	},
 
 	// 'invalidates' fields by highlighting provided fields as 'invalid'
-	highlight: function (el) {
+	highlight: function(el) {
 		el.classList.add(this.options.invalidClass);
 	},
-	unhighlight: function (el) {
+	unhighlight: function(el) {
 		el.classList.remove(this.options.invalidClass);
 	},
-	highlightByName: function (name) {
+	highlightByName: function(name) {
 		var el = document.querySelector('[name=' + name + ']');
 		this.highlight(el);
 	},
-	unhighlightByName: function (name) {
+	unhighlightByName: function(name) {
 		var el = document.querySelector('[name=' + name + ']');
 		this.unhighlight(el);
 	},
